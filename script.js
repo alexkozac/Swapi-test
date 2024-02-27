@@ -1,3 +1,5 @@
+import{fetchAll,addAnswerToCard} from './modules/utils.js'
+
 window.addEventListener('DOMContentLoaded', () => {
     main();
   });
@@ -45,20 +47,9 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   }
   
-  async function fetchAll(resource) {
-    const res = await fetch(`https://swapi.dev/api/${resource}/`);
-    const json = await res.json();
-    return json.results;
-  }
+
   
-  function addAnswerToCard(cardId, answer) {
-    const button = document.querySelector(`${cardId} .card-body .btn`);
-    const answerElement = document.querySelector(`${cardId} .card-footer em`);
-  
-    button.addEventListener('click', () => {
-      answerElement.textContent = answer;
-    });
-  }
+
   
   function findFastestShip(starships) {
     let fastest = starships[0];
@@ -122,18 +113,24 @@ window.addEventListener('DOMContentLoaded', () => {
     return `L'altezza media è ${averageHeight.toFixed(2)} cm`;
   }
   
-  function findMostDenselyPopulatedPlanet(planets, people) {
-    let mostDenselyPopulatedPlanet = planets[0];
+  function findMostDenselyPopulatedPlanet(planets) {
+    let mostDenselyPopulatedPlanet = null;
     let maxPopulationDensity = 0;
+  
     for (const planet of planets) {
       const population = parseInt(planet.population);
-      const planetPeople = people.filter(person => person.homeworld === planet.url).length;
-      const populationDensity = population === 0 ? 0 : planetPeople / population;
-      if (populationDensity > maxPopulationDensity) {
-        maxPopulationDensity = populationDensity;
-        mostDenselyPopulatedPlanet = planet;
+      const surfaceArea = parseInt(planet.surface_water) === 0 ? parseInt(planet.surface_water) : parseInt(planet.diameter) ** 2 * Math.PI;
+  
+      if (population !== 0 && surfaceArea !== 0) {
+        const populationDensity = population / surfaceArea;
+        if (populationDensity > maxPopulationDensity) {
+          maxPopulationDensity = populationDensity;
+          mostDenselyPopulatedPlanet = planet;
+        }
       }
     }
+    
     return mostDenselyPopulatedPlanet;
   }
+  
   
